@@ -1,0 +1,16 @@
+[package]
+name = "crawler"
+version = "0.1.0"
+authors = ["0x6d61 <0x6d61@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+reqwest = {version = "0.10.8", features = ["blocking"]}
+eyre = "0.6"
+select = "0.5"
+url = "2.2"
+env_logger = "0.8.3"
+log = "0.4.14"
+thiserror = "1.0.24"
