@@ -1,22 +1,29 @@
-use reqwest::blocking::ClientBuilder;
-use url::Url;
-use crawler::LinkEtractor;
 use crawler::crawler::Crawler;
+use crawler::LinkEtractor;
+use reqwest::blocking::ClientBuilder;
 use std::time::Duration;
+use structopt::StructOpt;
+use url::Url;
 
-fn main() ->  eyre::Result<()> {
+/// A toy web crawler
+#[derive(StructOpt)]
+struct Opt {
+    /// Maximum number of pages to be crawled
+    #[structopt(short = "n")]
+    maximum_page: usize,
+     /// URL where this program starts crawling
+    start_page: Url,
+}
+
+fn main() -> eyre::Result<()> {
     env_logger::init();
-    let url = std::env::args()
-            .nth(1)
-            .unwrap_or("https://www.rust-lang.org".to_owned());
-    let url = Url::parse(&url)?;
+    let opt = Opt::from_args();
     let client = ClientBuilder::new().build()?;
-
     let extractor = LinkEtractor::from_client(client);
-    let crawler = Crawler::new(&extractor,url);
+    let crawler = Crawler::new(&extractor, opt.start_page);
     let wait = Duration::from_millis(100);
-    for url in crawler.take(10) {
-        println!("{}",url);
+    for url in crawler.take(opt.maximum_page) {
+        println!("{}", url);
         std::thread::sleep(wait.clone());
     }
 
