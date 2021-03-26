@@ -1,3 +1,5 @@
+pub mod crawler;
+
 use reqwest::blocking::Client;
 use select::document::Document;
 use select::predicate::Name;
@@ -69,5 +71,13 @@ impl LinkEtractor {
         }
 
         Ok(links)
+    }
+}
+
+impl crawler::AdjacentNodes for LinkEtractor {
+    type Node = Url;
+
+    fn adjacent_nodes(&self,v:&Self::Node) -> Vec<Self::Node> {
+        self.get_links(v.clone()).unwrap()     
     }
 }

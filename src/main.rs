@@ -1,6 +1,8 @@
 use reqwest::blocking::ClientBuilder;
 use url::Url;
-mod lib;
+use crawler::LinkEtractor;
+use crawler::crawler::Crawler;
+use std::time::Duration;
 
 fn main() ->  eyre::Result<()> {
     env_logger::init();
@@ -10,12 +12,12 @@ fn main() ->  eyre::Result<()> {
     let url = Url::parse(&url)?;
     let client = ClientBuilder::new().build()?;
 
-    let extractor = lib::LinkEtractor::from_client(client);
-
-    let links = extractor.get_links(url)?;
-
-    for link in links.iter() {
-        println!("{}",link);
+    let extractor = LinkEtractor::from_client(client);
+    let crawler = Crawler::new(&extractor,url);
+    let wait = Duration::from_millis(100);
+    for url in crawler.take(10) {
+        println!("{}",url);
+        std::thread::sleep(wait.clone());
     }
 
     Ok(())
